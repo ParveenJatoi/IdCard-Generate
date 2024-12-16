@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ID Card Generator</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            width: 400px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"], input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .card {
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #ddd;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .card img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+        }
+        @media (max-width: 500px) {
+            .container {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ID Card Generator</h1>
+        
+        <label for="name">Enter Name</label>
+        <input type="text" id="name" name="name" required>
+        
+        <label for="roll_no">Enter your Roll No:</label>
+        <input type="text" id="roll_no" name="roll_no" required>
+        
+        <label for="user_image">Upload User Image</label>
+        <input type="file" id="user_image" name="user_image" accept="image/*" required>
+        
+        <button type="button" onclick="generateCard()">Generate Your ID Card</button>
+    </div>
+    
+    <!-- Card Container -->
+    <div id="card-container"></div>
+
+    <!-- JS for functionality -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script>
+        function generateCard() {
+            const name = document.getElementById('name').value;
+            const rollNo = document.getElementById('roll_no').value;
+            const userImage = document.getElementById('user_image').files[0];
+
+            if (name === "" || rollNo === "" || !userImage) {
+                alert('Please fill all fields and upload an image.');
+                return;
+            }
+
+            // Clear previous cards
+            const cardContainer = document.getElementById('card-container');
+            cardContainer.innerHTML = '';
+
+            // Create card element
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            // Create user image
+            const img = document.createElement('img');
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(userImage);
+
+            // Create institution logo
+            const logo = document.createElement('img');
+            logo.src = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBw0PDQ8NDQ0NDQ0NDg0NDQ0NDQ8NDQ0NFREXFhURFRUYHyggGB8xJxUVITEtJiorLjoxGB8/ODUsNyktLjcBCgoKDg0OFxAQFy8gHSArLS0rLSstKy4rNy0tLS8tKy0tLSstLS0tLS0rLystLSstLy0rLS0tLSstKy0tLS0rLf/AABEIAOEA4QMBEQACEQEDEQH/xAAcAAADAAMBAQEAAAAAAAAAAAAAAQIDBgcFBAj/xABHEAACAgEBBQQFCAYGCwEAAAAAAQIDEQQFBhIhMRNBUWEHIjJxgRQjM3KRobLBQlJigrHRJENUkpOiFhclRFNjlKOz4fEV/8QAGgEBAQADAQEAAAAAAAAAAAAAAAECBAUDBv/EADARAQACAgAEAggGAwEAAAAAAAABAgMRBBIhMUFRFDJSgZGx0fATM2FxweEiI0IF/9oADAMBAAIRAxEAPwDezrOMAAAACBgMAwA8AGCB4AeAAAwFAAEGAFgAAWAFgoAFgBABQAAAAAAAAABA0AwHggeAHgAwFPABgAAeAAAAWADACAMBCwAsAIoQCACgAAAAAAAgYDSArBAwAKeAGAYAeADAAAAGADACwAAIAwAsBCwBOChAIAACgAAAgYDApEDCngBgPADwAAPBAYAMAGADABgBYKDACwAgFgBMBBCZRLAQAUAAQMBoCkiBoBoKeAGkA8APBNh4AeCAKMepvrqg7LZwqrjzlOyShBe9vkIiZnULFZmdQjR6ym+HaUW13Qf6dU4zj7sotqzWdTGi1ZrOpjTOYoMALBQsDYWChYAQCwAgEEJookBABQ0QNAUiBhTAaApIBpEDwEMimkB4m2t69n6PKu1EXYv6mr523Pg0vZ+LR7Y8GTJ6sPfHw+TJ2hom2fShqJ5hoqI0R5pW3Ytt96j7MfjxG7j4GsdbztvY+ArHW87a1XpNq7UcrlHUazgklKUpLghJrPDFNpL3I2ObFh6dIbE2xYenSH1aPdfbtE1ZRptVTP8AWqsjF48HiXMxtnwWjVpiWNs+C0amYlumxds7xV4jq9mT1UOjnHs6bl9j4X9i95p5MfDz6t9NLJj4efUvpumh1TthxOm+iXfXfBRkvim0/gzUtGp77adq68dvpwYsSAWAhNFUihNAICWgEwiWUJgICgGiCgGgpoCkA0iBpEQwp4A0bf7Y+2LVKek1Vlmnw+LR14psS8msdqvJvPkzc4bJhr0vHXz++ze4XJir0tHXzcinBxbjKLjKLalFpxcWuqa7jrb260foQGw7r736vZ0Z10xqsqslxyrtjLCnjHFFxaa6Lx6Gvm4amXrPd4ZuHrl6z3ZNub87R1aUXYtNCLzwaXjq4n3cUuJyfuzjyJj4XHTw3+7HHwuOnhv93j//ALGt/tmq/wCot/mev4VPZj4PX8Knsx8Atr63otXq8vkktRblv7R+Fj9mPgfhU9mPg3rdrRbb09T1l+pvppzDGnvm7Z25eE3CeeBc/KX8TSy2wWnkrHXzhqX/AAMluSI98OkaDUq6mFqWONc14STw19qZoWryzMOdkpyWmrOYvMBEtFUiiWAmAgiWAmUIBoCkQNBVIBoCkiBoiGFNBTAeCDTPSfsbSz2ffrHVFamlVcF0fVm07Yxalj2lhvqbfB5LRkiu+ktzg8loyRXfSXGTsOuAAAA7B6L9g6RaKnXupT1Vjt+cn63Z8NkoLgX6PJdevmcnjMtueab6OVxmW3PNN9Gy70R/odnk63/nRr4fXh48L+bHvRutj5JDH61mfJ8X/wALm9c4r82XrYPJrkEIIllhSZRICYEsIllAA0BSIGgqkA0BSIhkUwqkA0iCkiK1j0mPGxtX5/J1/wB+s2eD/Or7/k2uEj/dX78HJqd1NdZooa+mrt6J9plU5nbXwzcXxQ6vpnln4HUniMcXmkzqXSnPSL8kzqXhnu9gB7Go3Y11WjetupdNClCKVvqWzcnhNQ6pe/HxPGOIx2vyRO5eUZqTblidy656MV/sbS+/Uf8AnmcrjPzre75OZxf5s+75PV3lj/Q7vJQf2TieWH14YcP+ZBbv6KVOnUZPLm1b4cPFCPq/cy5b81k4i8XvuPDo9FoweBASEJoITMlSwJYCYRLARQ0QUgqkBSAaJIogaAoKi+6FcXOyShCOMyfRdwiJmdQyrWbTqGaPPzXdjvMTSkiK1n0l1uWxtXwrOFRJ+5XwbNng51mr9+DZ4XplqweiixS2RUk03XbqIS8pcblj7JL7S8b0zT7l4uP9svR3i3N0GvzK6rs7301FOIW5/a7p/FP4Hni4nJj7T08mGPPenaeg3e3N0GgxKmrtLl/vF2LLc/s90fgkMvE5MneenkZM9795eZ6WrIx2RNSfOd+njDn1lxcX8Is9OBjeaPe9OEj/AGPo9GcGtjaTKxnt5L3O+eGTjJ/3W+/BjxX5tvvwbNKKaaaTTTTT5prwNZrvK3h25p9n0K7UN8LnGuEIJOc23z4V5LLfu9x64sVsltVZY8Vsk6h9mi1dV9ULqLI21WLihOL5Nfk/LqY2rNZ1MdXnas1nUx1ZWGKWEIITKqWUSAmBLCEUNEFIKaApAUiBkFIKpEGk7w7V7ezgg32NbfD+3LpxP8v/AGbuHHyxue7q8Ph5I3PeX17ubd7PFF7+b6V2P+r8n+z/AA93TDNh3/lXuw4jh+b/ACr3bjE0miwbQ0UNRRbp7Po7651Tx1SksZXn3lraazFo8GVZmsxMeDku6G2bNia6/Z+vTjRZNcU0m1CfSN8V3xaxn4eGDq8RjjiKRkp3++jo5qRmrFq93YaLoWQjZXONlc0pQnCSlCUfFNcmcmdxOpc+Y13O+2FcJWWTjXXBOU5zkowivFt8kI3M6giN9Icc3w2zZtvX0aDQJyohNquTTSsm/bvl4RS6fHxwdbh8ccPjm9+/30dHFSMNJtbu63s3Qw0+np09fsUVwqi31aisZfn3/E5VrTa02nxc68zaZmWLbG06NJRPUaiahXD4ylLujFd7ZlSlr25a90pSbzqHBN6t4bto6l32ZjCPq0U5zGqvw82+rf5JHdwYYxV1HfxdjDijHXUPp3N3n1OgvSrUrqLpxVmlWW5yfJSr8J9F58k+4x4jBXLXr0mPFhxGCuSvXpMeLu0JZipcLjlJ8MsKUcro8d5xHFmAyoTCEwIZkEwJYCYRJRSIGgqkBSIKRA0BSCqRJVrm8uxeJPUUx9Zc7YL9Jd80vHxPfDl1/jLd4bPr/C3uaobbfe3sPeCenxXbmyjol1nX9XxXkeGXDFusd2vlwRfrHdu2k1Nd0FZVNTi+9dz8Gu5+80bVms6lpWrNZ1Lyt6N1NJtKtRvi4WwXzWorwra/Ln7UfJ/DD5nph4i+Gd1+D0xZbY56Ofr0f7d0cmtn61OtvK7LUWaZy85Qfq/ezf8ATMGT169f222/x8V/WqH6P9vayS+X61KtPL7bUWalx84wXq5+KEcZgx/l16/to/HxV9Wrf91t1NJs2txoTnbNYt1FmHbPy5cox8l8cmhm4i+ad2+DUy5bZJ6r3l3l0mz6+PUT9eSbqohh3WvyXcvN8hhw3yzqsJjxWyT0cO3o3m1W0bu0vfDXFvsaIP5uqP5vxb+5cjt4cFcUajv5uniw1xxqHinu9XXfRpuf2EI6/VQ/pFizp65LnRW17bXdJ/cvNs5PF8TzTyV7eLl8Vn5p5K9m/M0mikqJCEESywqWUSwEwEENANBVICkQUA0QUgqkYrC0Rk0nefZfYW9pBYqtbaS6Qs74+7vXx8DewZOaNT3h0uHy89dT3h4h7Nhm0mrtplx1TlCXjF8mvBro/iY2rFo1MJasW6S2XQ74tYWop4v26nh/3X/M1rcJ7M/Fr24b2ZerHevQcLlK2cMJt8VVjwv3Uzx9GyeTynBd5Gr9J+xoRzC26990atPZFv8AxOFHrXgM0z1jXvZRw2SfBp+3fSxqbE4aGiOli8rtrGrrseKXsx/zG3i/86sdbzv5PenCRHrTtz7Vaiy2yVts522zeZ2Tk5Tk/Ns6NaxWNRGobURERqGIqt19GO7C1mp+U3RzpdLKLafS2/rGHml7T+C7zS4zPyV5Y7z8mrxWbkryx3l2lnHclLKkoZWJFEhEsollCYEsACBBVIBgUiCiBoCkRVokqpEZMG0tFG+mdUsesvVf6s1ziy0ty2iXrjvyWiXN7IOMnGSxKLcZLwknho6cTvq6sTuNpAAMeq+jn9Sf4WWO45sjoPYAAF01TnONdcXKdkowhFdZTk8JL7STMRG5SZ1G36L3b2PDQ6OnSQw3XHNkl/WXPnOf2/ckfPZck5LzaXFy3m9ps9FmDzQywxQysSZRLDEmVUMoQEgAQIKpANAUiCiBoKpEFokqpEZLRFaRvhpOz1PaJerfHj/fXKX5P4m9w9t115Olw1t015PCPd7gDHqvo5/Un+FljuObI6D2NReG8PCxl4eFnpl9w2EBu/ok2Sr9ou+SzDRV9r5dtL1YL8cv3TR4/Jy4+XzavF35aa83a2cdy5QyohlhihlYkyiWGKWVUsoQEgIIaAoKaApEkUQNAUiKpEVaIyWiK8LfPT8WlVnfVZF/uy9V/fwnvw06vrzbXC21bXm0g3m+AMeq+jn9Sf4WWO45sjoPZn0c7oS7Sh2RnWnJyrbUox728d3j3GNorMaskxE9JevpXpdd83d2Wi1j5VaiMVXo9RLujdBcq5ftRxHnzXeeNufF1jrXy8Y/bz/Z5TzU6x1h1P0XbEt0ehs7et1X3aixzjJeso1+pFeaypNPo+LkcvjcsZMkcs7iIaPFZIvbp2bgzVaiGVEsqShlYkyiQkpZRLKEBLAAgQDQVSApEFIgaApBVIiqRiyhaCvj25Xx6S+P/KnJe+K4l/AyxTq8PXDOrw5wdJ1ABj1X0c/qT/Cyx3HNkdB7MmnlYpxdTnGxPMHW2pp+MWuZJ1rr2SdeL3KNNXtGEuyjCraUIufZQSjVtCKWW4RXKFuFnC5S7knnOvNpwz161+X9fJ5TM4+/q/J2/dimVeztHCbk5x0tHFxNt8TrTa5+84uWYnJaY85crLO7zP6vRZg80sqIZWKWZIlhCAllgSyiWAmAggQFIKaApAUiBkFIKpEFIjJSZFTqFmua8YTX2poR3ZVnUw5gjqOyAjHqvo5/Un+FljuObI6D2OLaaabTTTTXJp+KA9uUXqKJa2j5vW6Nws1Ma/VdkOJcOsgl0knhTx3uMu9mv6k8k+rPb6fT4PH1Z5Z7T96+j9Bxbws83hZfizguNIbKIZWKWysUsoTCEwiWVUsolgJhElDIGgqkBSAaJIogaCqAaIqkyKVzxCT8Iyf3CO7KO8OYrodN2gEY9V9HP6k/wssdxzZHQewA+/YW0npdTXfjihFuF1b5q3TyXDZW135Ta+w88uPnrNfvfgwyU5qzD9INnzzhpbKxmUtlRJUSEIBMqJZVSwEwJYQigRBSAaCqQDQFIxQwqkFNMCskV821LOHT3S8KbMe/heC0jdoemKN3rH6udHRdgAY9V9HP6k/wssdxzZHQewAT6AfpXZ96soptXSymqxfvQT/M+ctGpmHz9o1aYZ2wxSwhMoTCEwiWWFSyhASwiWAigQFIgpBTAaApEFIiGgphTQHy7VrhPT2RssVNbSc7G0lGKaby3y7jKkzFomI29MVpreJiNvAq2DpZ54dapYlCDxwZUpcop8+/uPb8e3stv0u8f8vo/wBEq/8Ajz/uR/mT0ifJPTZ9lNm6FcouPyia4k17Ee9Y8R6TPkemT5Ner9Fekksx110lzWVXW1lPD7/Jnt6ff2YZenX9mFf6p9N/bb/8Ksen39mE9Pt7MJj6LNI3JLX3NwfDNKutuMuFSw+fJ4kn8UX0+/sr6deP+W9bK0fyfTU6ZTdiorjUpySTlGKwsr3YNK9ua0282je/Nabeb6iMSATCEESVSZRICYEhCZRIDAaIKQDQU0BSAaZBREAUwPj2pCTjXOMHYqb67Z1xw5Tgk1yT6tNqa+py54Mq+L0pMdY83wbRuqu4LKZcOoru0tfz1VsJQhPUQa46pcMmsw5Pl+lh9TKsTG4nt1+Xn1Z1ia7ie3X5efV6Gl1Fvbzosdcuzoot464SrzKyy6LWHKWFiuPf4+5YzWOXcec/x9WExHLEx5/R82l2hfdOddfY1up2Oc7K52RkvlF1UIxiprDxS23nvWF4WaxWNz99I+rKa1rG5++kfVi2PfqZwVVfY1yrUp2ucZ3Rc53W+pHEo8lwvm/Fci3isTufvsXisTufvsy6XaGo1ClKlU19koRnC1Tsc7nCM3BSi1wpKUVxYl1fLlzk1ivcmta9/Fg2VqrJ/KdVBx7GU67+x7GUr5Z0NElFTU8J80vZZleutVnv/cresRqs9/7l92zbdROKssnprKrIKyuWnjOPDnGI5cpKa5+0uHp058sLRWOkb97C8VjpG9/q+0xYDIQgiSqTKEwJAQQmBLKEAIBgUiBhTQFJgNAPJNBpkQwMWqnZGPFVBWNSTlDKjKcO9RbeFLvWeXLHLOSxrxZV1M9XmazT3XXQvjVKv5PFJQtlWpXy7emzC4ZNLCqkk2+s+5ZZnW0RWY8/pMfy9a2itZjff6Sz8VkbnqFp7ZK2mqmVSlSra5Vztkm8z4Wn2j6PlhePKdJjl34/r+n0TpNeXfafow6HT3aecrHVK7t4ZlCmVfFVZ291vDmcoqS+fxlfq9OZbTFo15f1H8La1bRretfSI/hhq2b2b47dJHVOdcc8HYydVinZOUM2OOY/OLDXg8pFm2+kTpZvvpE6fdsjSyr7biqhSp2VShXW064paaqDUeS5Jxkui6dDG8xOvvxlhktE66/e5fNsPT36etVyqcnOrTy4lOCjXbDS11Srnzz1q6xUva8i5LRadx+vzmWWSa2ne/P5yy6CmfbysVEtLXKt9rXKVbjbqHNNWRjCTS5cSb5OXEs9Baemt7S0xy63uf4emebyGQiSqRQmAgJAQRLKEAgABgNAUiBoKoAQDAeQKTIHkgAAAyEAAF2AAIWSqWRoLJQgEAgJYQmUSAmAFAAEDApAMgaCmgGA8gPIBkB5JoGQHkBZAMgGRoGQFkoWQEAgEAmEJlCATARQAAAAIgYFIB5IGAwoAYDyAAGQDIBkAyAAGQEAALICCEAslCAQCKAAAAAAIABgPIDIHkB5AeQoyAAPIAAAACAMgGQFkIQBkCclCAMgIoAAAAAAAAAAgYDAMgPJA8gPIBkKMgAAAZAMgAQsgLIBkoQCAWQAoAAAAAAAAAAAACBoBgMAQAAyBgACAYCARQAIBAACYAUAAAAAAB//2Q==';  // Replace with actual logo
+            logo.alt = 'Institute Logo';
+
+            // Create text elements
+            const nameText = document.createElement('h2');
+            nameText.textContent = name;
+            const rollText = document.createElement('p');
+            rollText.textContent = `Roll No: ${rollNo}`;
+
+            // Create QR Code
+            const qrCode = document.createElement('canvas');
+            const qr = new QRious({
+                element: qrCode,
+                size: 100,
+                value: `${name}, ${rollNo}`
+            });
+
+            // Append elements to the card
+            card.appendChild(logo);
+            card.appendChild(img);
+            card.appendChild(nameText);
+            card.appendChild(rollText);
+            card.appendChild(qrCode);
+
+            // Append card to container
+            cardContainer.appendChild(card);
+        }
+    </script>
+</body>
+</html>
